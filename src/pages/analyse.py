@@ -2,6 +2,7 @@
 import plotly.express as px
 import plotly.graph_objects as go
 from dash import dcc, html
+from src.utils.common_functions import GRAVITY_COLORS
 import pandas as pd
 
 DARK_BG    = "#0d0d0d"
@@ -35,7 +36,7 @@ def layout(df: pd.DataFrame) -> html.Div:
     fig_pie = go.Figure(go.Pie(
         labels=grav["grav_label"], values=grav["count"],
         hole=0.6,
-        marker=dict(colors=["#ff4444", "#ff8c00", "#4fc3f7", "#aaaaaa"],
+        marker=dict(colors=[GRAVITY_COLORS.get(l, "#555555") for l in grav["grav_label"]],
                     line=dict(color="#0d0d0d", width=2)),
         hovertemplate="<b>%{label}</b><br>%{value:,}<br>%{percent}<extra></extra>",
     ))

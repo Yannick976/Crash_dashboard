@@ -1,9 +1,9 @@
 """Page carte : accidents geolocalisés sur la France."""
 import io
 import pandas as pd
-import plotly.express as px
 from dash import dcc, html, Input, Output, callback
-from src.utils.common_functions import filter_df, get_dept_options
+from src.utils.common_functions import filter_df, get_dept_options, GRAVITY_COLORS
+import plotly.graph_objects as go
 
 DARK_BG    = "#0d0d0d"
 CARD_BG    = "#141414"
@@ -58,6 +58,7 @@ def layout(df: pd.DataFrame) -> html.Div:
     ], style={"background": DARK_BG, "color": WHITE})
 
 
+
 @callback(
     Output("carte-map", "figure"),
     Input("carte-dep",   "value"),
@@ -66,39 +67,37 @@ def layout(df: pd.DataFrame) -> html.Div:
 )
 def update_carte(dep: str, grav: int, data_json: str):
     """Met a jour la carte selon les filtres."""
-    df  = pd.read_json(io.StringIO(data_json))
-    dff = filter_df(df, dep, grav)
+    dff = filter_df(pd.read_json(io.StringIO(data_json)), dep, grav)
 
     if len(dff) > 20000:
         dff = dff.sample(20000, random_state=42)
 
-    color_map = {
-        "Tue":                "#ff4444",
-        "Blesse hospitalise": "#ff8c00",
-        "Blesse leger":       "#4fc3f7",
-        "Indemne":            "#aaaaaa",
-        "Inconnu":            "#555555",
-    }
+    order = ["Indemne", "Blesse leger", "Blesse hospitalise", "Tue"]
 
-    fig = px.scatter_mapbox(
-        dff, lat="lat", lon="long",
-        color="grav_label",
-        color_discrete_map=color_map,
-        hover_data={"atm_label": True, "catr_label": True,
-                    "mois_nom": True, "lat": False, "long": False},
-        labels={"grav_label": "Gravité", "atm_label": "Météo",
-                "catr_label": "Type route", "mois_nom": "Mois"},
-        zoom=5, center={"lat": 46.8, "lon": 2.3},
-        mapbox_style="carto-darkmatter",
-        opacity=0.7,
-    )
-    fig.update_traces(marker=dict(size=5))
+    fig = go.Figure()
+    for cat in order:
+        sub = dff[dff["grav_label"] == cat]
+        if sub.empty:
+            continue
+        fig.add_trace(go.Scattermapbox(
+            lat=sub["lat"],
+            lon=sub["long"],
+            mode="markers",
+            marker=dict(size=5, color=GRAVITY_COLORS[cat], opacity=0.7),
+            name=cat,
+            hovertemplate="<b>" + cat + "</b><br>%{text}<extra></extra>",
+            text=sub["atm_label"] + " · " + sub["catr_label"],
+        ))
+
     fig.update_layout(
+        mapbox=dict(style="carto-darkmatter", zoom=5, center={"lat": 46.8, "lon": 2.3}),
         paper_bgcolor="#0d0d0d",
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         legend=dict(
             bgcolor="#141414", bordercolor="#2a2a2a", borderwidth=1,
-            font=dict(color="#f0f0f0"), title=dict(text="Gravité", font=dict(color="#ff4444"))
+            font=dict(color="#f0f0f0"),
+            title=dict(text="Gravité", font=dict(color="#ff4444")),
         ),
+        uirevision="stable",
     )
     return fig

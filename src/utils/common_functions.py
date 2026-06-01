@@ -1,5 +1,12 @@
 import pandas as pd
 
+GRAVITY_COLORS: dict[str, str] = {
+    "Indemne":            "#aaaaaa",
+    "Blesse leger":       "#4fc3f7",
+    "Blesse hospitalise": "#ff8c00",
+    "Tue":                "#ff4444",
+    "Inconnu":            "#555555",
+}
 
 def filter_df(df: pd.DataFrame, dep: str | None, gravite: int | None) -> pd.DataFrame:
     """Filtre le dataframe selon departement et gravite.
