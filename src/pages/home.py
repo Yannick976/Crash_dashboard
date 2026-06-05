@@ -137,109 +137,26 @@ def _nav_card(
 
 def layout(df: pd.DataFrame) -> html.Div:
     """Retourne le layout de la page d'accueil."""
-
     nb_accidents = len(df)
     nb_tues = int((df["grav_label"] == "Tue").sum())
-    nb_departements = df["dep"].nunique()
-    nb_communes = df["com"].nunique()
 
     return html.Div([
         # En-tête
         html.Div([
-            html.P(
-                "CRASH DASHBOARD · FRANCE 2024",
-                style={
-                    "color": RED,
-                    "letterSpacing": "4px",
-                    "fontSize": "11px",
-                    "fontWeight": "700",
-                    "marginBottom": "16px",
-                },
-            ),
-
-            html.H1(
-                "Accidents de la route",
-                style={
-                    "color": WHITE,
-                    "fontSize": "52px",
-                    "fontWeight": "900",
-                    "margin": "0",
-                    "lineHeight": "1",
-                },
-            ),
-
-            html.H1(
-                "en France",
-                style={
-                    "color": MUTED,
-                    "fontSize": "52px",
-                    "fontWeight": "900",
-                    "margin": "0 0 16px",
-                    "lineHeight": "1",
-                },
-            ),
-
+            html.P("CRASH DASHBOARD · FRANCE 2024",
+                   style={"color": RED, "letterSpacing": "4px",
+                          "fontSize": "11px", "fontWeight": "700", "marginBottom": "16px"}),
+            html.H1("Accidents de la route",
+                    style={"color": WHITE, "fontSize": "52px",
+                           "fontWeight": "900", "margin": "0", "lineHeight": "1"}),
+            html.H1("en France",
+                    style={"color": MUTED, "fontSize": "52px",
+                           "fontWeight": "900", "margin": "0 0 16px", "lineHeight": "1"}),
             html.P(
                 f"{nb_accidents:,} accidents recensés · {nb_tues:,} personnes tuées",
-                style={
-                    "color": MUTED,
-                    "fontSize": "15px",
-                    "margin": "0 0 48px",
-                },
+                style={"color": MUTED, "fontSize": "15px", "margin": "0 0 48px"},
             ),
         ], style={"padding": "60px 40px 0"}),
-
-        # Cartes KPI
-        html.Div([
-            html.Div([
-                html.H2(f"{nb_accidents:,}", style={"color": WHITE, "margin": "0"}),
-                html.P("Accidents", style={"color": MUTED, "margin": "0"}),
-            ], style={
-                "background": CARD_BG,
-                "border": f"1px solid {BORDER_CLR}",
-                "padding": "20px",
-                "borderRadius": "8px",
-                "textAlign": "center",
-            }),
-
-            html.Div([
-                html.H2(f"{nb_tues:,}", style={"color": RED, "margin": "0"}),
-                html.P("Personnes tuées", style={"color": MUTED, "margin": "0"}),
-            ], style={
-                "background": CARD_BG,
-                "border": f"1px solid {BORDER_CLR}",
-                "padding": "20px",
-                "borderRadius": "8px",
-                "textAlign": "center",
-            }),
-
-            html.Div([
-                html.H2(f"{nb_departements}", style={"color": WHITE, "margin": "0"}),
-                html.P("Départements", style={"color": MUTED, "margin": "0"}),
-            ], style={
-                "background": CARD_BG,
-                "border": f"1px solid {BORDER_CLR}",
-                "padding": "20px",
-                "borderRadius": "8px",
-                "textAlign": "center",
-            }),
-
-            html.Div([
-                html.H2(f"{nb_communes:,}", style={"color": WHITE, "margin": "0"}),
-                html.P("Communes", style={"color": MUTED, "margin": "0"}),
-            ], style={
-                "background": CARD_BG,
-                "border": f"1px solid {BORDER_CLR}",
-                "padding": "20px",
-                "borderRadius": "8px",
-                "textAlign": "center",
-            }),
-        ], style={
-            "display": "grid",
-            "gridTemplateColumns": "repeat(4, 1fr)",
-            "gap": "20px",
-            "padding": "0 40px 50px",
-        }),
 
         # Deux cartes de navigation
         html.Div([
@@ -265,9 +182,4 @@ def layout(df: pd.DataFrame) -> html.Div:
             "gap": "24px",
             "padding": "0 40px 60px",
         }),
-    ], style={
-        "background": DARK_BG,
-        "color": WHITE,
-        "minHeight": "100vh",
-    })
-    
+    ], style={"background": DARK_BG, "color": WHITE, "minHeight": "100vh"})
