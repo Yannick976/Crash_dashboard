@@ -270,4 +270,4 @@ def layout(df: pd.DataFrame) -> html.Div:
         "color": WHITE,
         "minHeight": "100vh",
     })
-    ], style={"background": DARK_BG, "color": WHITE, "minHeight": "100vh"})
+    
