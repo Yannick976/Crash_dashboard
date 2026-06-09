@@ -74,6 +74,37 @@ def layout(df: pd.DataFrame) -> html.Div:
     ))
     fig_atm.update_layout(xaxis_tickangle=-30)
 
+    # Graphique 5 : évolution mensuelle
+    mois = (
+        df.groupby("mois_nom")
+        .size()
+        .reset_index(name="count")
+    )
+
+    ordre_mois = [
+        "Jan", "Fev", "Mar", "Avr",
+        "Mai", "Jun", "Jul", "Aou",
+        "Sep", "Oct", "Nov", "Dec"
+    ]
+
+    mois["mois_nom"] = pd.Categorical(
+        mois["mois_nom"],
+        categories=ordre_mois,
+        ordered=True
+    )
+
+    mois = mois.sort_values("mois_nom")
+
+    fig_mois = _dark_fig(
+        px.line(
+            mois,
+            x="mois_nom",
+            y="count",
+            markers=True,
+            title="Evolution des accidents par mois"
+        )
+    )
+
     # Graphique 4 : vitesse limite
     if "vma" in df.columns:
         vma = df["vma"].dropna()
@@ -112,7 +143,16 @@ def layout(df: pd.DataFrame) -> html.Div:
             html.Div([_card(fig_pie), _card(fig_route)],
                      style={"display": "grid", "gridTemplateColumns": "1fr 2fr",
                             "gap": "24px", "marginBottom": "24px"}),
-            html.Div([_card(fig_atm), _card(fig_vma)],
-                     style={"display": "grid", "gridTemplateColumns": "1fr 1fr", "gap": "24px"}),
+            html.Div(
+                [_card(fig_atm), _card(fig_vma)],
+                style={
+                    "display": "grid",
+                    "gridTemplateColumns": "1fr 1fr",
+                    "gap": "24px",
+                    "marginBottom": "24px",
+                },
+            ),
+
+            _card(fig_mois),
         ], style={"padding": "0 40px 40px"}),
     ], style={"background": DARK_BG, "color": WHITE})
